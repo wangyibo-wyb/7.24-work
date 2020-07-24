@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="typing.css">
+</head>
+
+<body>
+    <div class="box">
+        <div class="start">
+            <span>开始游戏</span>
+        </div>
+        <div class="grade">
+            <span>积分</span>
+            <div class="grades"></div>
+        </div>
+        <div class="life">
+            <span>生命值</span>
+            <div class="lifes"></div>
+        </div>
+        <div class="stop">
+            <span>停止游戏</span>
+        </div>
+        <div class="menu">
+            <div class="score">
+                <span>当前得分:</span>
+                <div class="score-now"></div>
+            </div>
+            <div class="back">
+                <span>上一关</span>
+            </div>
+            <div class="continue">
+                <span>继续游戏</span>
+            </div>
+            <div class="next">
+                <span>下一关</span>
+            </div>
+            <div class="restart">
+                <span>重新开始</span>
+            </div>
+        </div>
+        <div class="defeat">
+            <div class="defeat-text">生命耗尽，挑战失败</div>
+            <div class="defeat-score">
+                <span>本次得分:</span>
+                <div class="d-score"></div>
+            </div>
+            <div class="defeat-menu">
+                <div class="defeat-restart">
+                    <span>重新开始</span>
+                </div>
+            </div>
+        </div>
+        <div class="first">
+            <div class="first-text">已经是第一关了！</div>
+            <div class="first-restart">
+                <span>继续游戏</span>
+            </div>
+            <div class="first-next">
+                <span>下一关</span>
+            </div>
+        </div>
+        <div class="last">
+            <div class="last-text">已经是最后一关！</div>
+            <div class="last-back">
+                <span>上一关</span>
+            </div>
+            <div class="last-restart">
+                <span>重新开始</span>
+            </div>
+        </div>
+    </div>
+    <script>
+        var letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
+
+        var divs = [];
+        var box = document.querySelector(".box");
+
+        function create(num) {
+            var current = [];
+            for (var i = 0; i < num; i++) {
+                current.push(letters[Math.floor(letters.length * Math.random())]);
+            }
+            for (var i = 0; i < current.length; i++) {
+                var div = document.createElement("div");
+                div.innerHTML = current[i];
+                div.style.cssText = "position:absolute;left:" + (box.offsetWidth-150) * Math.random() + "px;top:" + (40 * Math.random()) + "px;font-size:" + 70 + "px;width:150px;height:150px;background:url(imgs/2.png) no-repeat 0 0;line-height:150px;text-align:center;"
+                box.appendChild(div);
+                divs.push(div);
+            }
+        }
+        console.log(box.offsetWidth);
+        var speed = 5;
+        var lifeScore = 50;
+        var lifes = document.querySelector(".lifes");
+        lifes.innerHTML = lifeScore;
+        var defeat = document.querySelector(".defeat");
+        var dscore = document.querySelector(".d-score");
+        function typing() {
+            for (var i = 0; i < divs.length; i++) {
+                divs[i].style.top = divs[i].offsetTop + speed + "px";
+                if (divs[i].offsetTop + speed > 720) {
+                    box.removeChild(divs[i])
+                    divs.splice(i, 1);
+                    create(1);
+                    lifeScore -= 5;
+                    lifes.innerHTML = lifeScore;
+                    if (lifeScore == 0) {
+                        clearInterval(t);
+                        defeat.style.display = "block";
+                        dscore.innerHTML = score;
+                    }
+                }
+            }
+        }
+        var t = setInterval(typing, 50);
+        //开始游戏
+        var start = document.querySelector(".start");
+        var grade = document.querySelector(".grade");
+        var life = document.querySelector(".life");
+        var stop = document.querySelector(".stop");
+        start.onclick = function () {
+            start.style.display = "none";
+            grade.style.display = "block";
+            life.style.display = "block";
+            stop.style.display = "block";
+            create(4);
+        }
+
+        var score = 0;
+        var grades = document.querySelector(".grades");
+        document.onkeydown = function (ev) {
+            var letter = String.fromCharCode(ev.keyCode);
+            for (var i = 0; i < divs.length; i++) {
+                if (divs[i].innerHTML == letter) {
+                    score += 1;
+                    grades.innerHTML = score;
+                    box.removeChild(divs[i]);
+                    divs.splice(i, 1);
+                    create(1);
+                    break;
+                }
+            }
+        }
+        //继续游戏
+        var continuegame = document.querySelector(".continue");
+        continuegame.onclick = function (){
+            menu.style.display = "none";
+            t = setInterval(typing, 50);
+        }
+
+        //重新开始
+        var restart = document.querySelector(".restart");
+        var drestart = document.querySelector(".defeat-restart");
+        var frestart = document.querySelector(".first-restart");
+        var lrestart = document.querySelector(".last-restart");
+        restart.onclick = function () {
+            window.location.reload(true);
+        }
+        drestart.onclick = function () {
+            window.location.reload(true);
+        }
+        frestart.onclick = function () {
+            first.style.display = "none";
+            t = setInterval(typing, 50);
+        }
+        lrestart.onclick = function () {
+            window.location.reload(true);
+        }
+        //下一关
+        var next = document.querySelector(".next");
+        var fnext = document.querySelector(".first-next");
+        var last = document.querySelector(".last");
+        next.onclick = function () {
+            menu.style.display = "none";
+            first.style.display = "none"
+            lifeScore = 50;
+            lifes.innerHTML = lifeScore;
+            if (divs.length >= 12) {
+                last.style.display = "block";
+                clearInterval(t);
+            } else {
+                create(2);
+                speed += 5;
+                t = setInterval(typing, 50);
+            }
+        }
+        fnext.onclick = function () {
+            menu.style.display = "none";
+            first.style.display = "none"
+            lifeScore = 50;
+            lifes.innerHTML = lifeScore;
+            if (divs.length >= 12) {
+                last.style.display = "block";
+                clearInterval(t);
+            } else {
+                create(2);
+                speed += 5;
+                t = setInterval(typing, 50);
+            }
+        }
+        //停止游戏
+        var menu = document.querySelector(".menu");
+        var nowscore = document.querySelector(".score-now");
+        stop.onclick = function () {
+            clearInterval(t);
+            menu.style.display = "block";
+            nowscore.innerHTML = score;
+        }
+
+        //上一关
+        var first = document.querySelector(".first");
+        var back = document.querySelector(".back");
+        var lback = document.querySelector(".last-back")
+        back.onclick = function () {
+            menu.style.display = "none";
+            if (divs.length <= 4) {
+                first.style.display = "block";
+            } else {
+                last.style.display = "none";
+                speed -= 5;
+                box.removeChild(divs[0]);
+                box.removeChild(divs[1]);
+                divs.splice(0, 2);
+                t = setInterval(typing, 50);
+            }
+        }
+        lback.onclick = function () {
+            menu.style.display = "none";
+            if (divs.length <= 4) {
+                first.style.display = "block";
+            } else {
+                last.style.display = "none";
+                speed -= 5;
+                box.removeChild(divs[0]);
+                box.removeChild(divs[1]);
+                divs.splice(0, 2);
+                t = setInterval(typing, 50);
+            }
+        }
+
+    </script>
+</body>
+
+</html>
